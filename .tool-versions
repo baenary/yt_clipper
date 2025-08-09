@@ -1,2 +1,4 @@
-just 1.40.0
-uv   0.8.0
+just   1.42
+uv     0.8
+python 3.12
+node 22.18

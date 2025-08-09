@@ -23,15 +23,15 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        node-version: ['20.16.x']
-        os: [windows-latest, macos-13]
+        node-version: ['22.18.x']
+        os: [windows-latest, macos-latest]
         include:
           - os: windows-latest
             shortos: win
             ffmpeg_dl_name: ffmpeg-7.1-full_build-shared
             ffmpeg_dl_prefix: 'https://github.com/GyanD/codexffmpeg/releases/download/7.1'
             yt-dlp_download_url: 'https://github.com/yt-dlp/yt-dlp/releases/download/2024.10.07/yt-dlp.exe'
-          - os: macos-13
+          - os: macos-latest
             shortos: macos
             ffmpeg_dl_url: 'https://evermeet.cx/ffmpeg/ffmpeg-7.1.7z'
             ffprobe_dl_url: 'https://evermeet.cx/ffmpeg/ffprobe-7.1.7z'

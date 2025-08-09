@@ -15,10 +15,10 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        node-version: ['20.16.x']
-        os: [macos-13]
+        node-version: ['22.18.x']
+        os: [macos-latest]
         include:
-          - os: macos-13
+          - os: macos-latest
             shortos: macos
 
     steps:
