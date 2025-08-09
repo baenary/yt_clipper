@@ -14,7 +14,7 @@ from clipper import (
     ytc_logger,
     ytc_settings,
 )
-from clipper.clipper_types import ClipperState
+from clipper.clipper_types import ClipperPaths, ClipperState
 from clipper.ffmpeg_version import getFfmpegVersion
 from clipper.version import __version__
 from clipper.ytc_logger import logger
@@ -29,9 +29,9 @@ def main() -> None:
     args, unknown, argsFromArgFiles, argFiles, argsFromArgFilesMap = argparser.getArgs()
 
     cs.settings.update({"color_space": None, **args})
-    ytc_settings.loadSettings(cs.settings)
+    ytc_settings.loadSettingsFromMarkersJson(cs.settings)
 
-    setupDepPaths(cs)
+    setupClipperPaths(cs)
 
     if cs.settings["printVersions"]:
         print(argparser.getDepVersionsString(cs.clipper_paths))
@@ -41,7 +41,7 @@ def main() -> None:
 
     ytc_logger.setUpLogger(cs)
 
-    logger.debug(f"yt-dlp path set: {cs.clipper_paths.ytdlPath}")
+    logger.debug(f"clipper paths set up: {cs.clipper_paths}")
 
     logger.report(f"yt_clipper version: {__version__}")
     logger.report(
@@ -85,31 +85,40 @@ def main() -> None:
         util.notifyOnComplete(cs.settings["titleSuffix"])
 
 
-def setupDepPaths(cs: ClipperState) -> None:
+def setupClipperPaths(cs: ClipperState) -> None:
     settings = cs.settings
-    cp = cs.clipper_paths
+    cp: ClipperPaths = cs.clipper_paths
 
-    if getattr(sys, "frozen", False):
-        cp.ffmpegPath = "./bin/ffmpeg"
-        cp.ffprobePath = "./bin/ffprobe"
-        cp.ffplayPath = "./bin/ffplay"
-        cp.ytdlPath = "./bin/yt-dlp"
+    ffmpeg_tools_dir = settings.get("ffmpegToolsDir")
+
+    if getattr(sys, "frozen", False) or ffmpeg_tools_dir:
+        cp.ffmpegPath = f"{ffmpeg_tools_dir}/ffmpeg"
+        cp.ffprobePath = f"{ffmpeg_tools_dir}/ffprobe"
+        cp.ffplayPath = f"{ffmpeg_tools_dir}/ffplay"
 
         if sys.platform == "win32":
             cp.ffmpegPath += ".exe"
             cp.ffprobePath += ".exe"
             cp.ffplayPath += ".exe"
-            cp.ytdlPath += ".exe"
+
+    if getattr(sys, "frozen", False):
+        cp.ytdlPath = "./bin/yt-dlp"
 
         if sys.platform == "darwin":
             cp.ytdlPath += "_macos"
 
-            certifi_cacert_path = certifi.where()
-            os.environ["SSL_CERT_FILE"] = certifi_cacert_path
-            os.environ["REQUESTS_CA_BUNDLE"] = certifi_cacert_path
+        if sys.platform == "win32":
+            cp.ytdlPath += ".exe"
 
     if settings["ytdlLocation"]:
         cp.ytdlPath = settings["ytdlLocation"]
+
+    if sys.platform == "darwin":
+        certifi_cacert_path = certifi.where()
+        os.environ["SSL_CERT_FILE"] = certifi_cacert_path
+        os.environ["REQUESTS_CA_BUNDLE"] = certifi_cacert_path
+
+
 
 
 def setupOutputPaths(cs: ClipperState) -> None:

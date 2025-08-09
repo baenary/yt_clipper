@@ -59,6 +59,9 @@ def getArgParser() -> argparse.ArgumentParser:
     logging_options = parser.add_argument_group("Logging Options")
     add_logging_options(logging_options)
 
+    tool_options = parser.add_argument_group("Tool Options")
+    add_tool_options(tool_options)
+
     other_options = parser.add_argument_group("Other Options")
     add_other_options(other_options)
 
@@ -785,6 +788,17 @@ def add_logging_options(logging_options: argparse._ArgumentGroup) -> None:
                 "Disable rich colored logging introduced in v5.26 (3 column layout with syntactical highlighting)."
                 "Use simpler colored logging instead.",
             ],
+        ),
+    )
+
+
+def add_tool_options(tool_options: argparse._ArgumentGroup) -> None:
+    tool_options.add_argument(
+        "--ffmpeg-tools-dir",
+        dest="ffmpegToolsDir",
+        type=str,
+        help=" ".join(
+            ["Use ffmpeg from the system PATH overriding any default search paths for ffmpeg."],
         ),
     )
 

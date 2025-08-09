@@ -25,6 +25,7 @@ def ffprobeVideoProperties(cs: ClipperState, videoURL: str) -> Optional[DictStrA
                 ),
             )
             ffprobeCommand = f'"{cp.ffprobePath}" "{videoURL}" {ffprobeFlags} '
+            logger.debug(ffprobeCommand)
             ffprobeOutput = subprocess.check_output(shlex.split(ffprobeCommand))
             logger.success(f"Successfully fetched video properties with ffprobe")
             done = True

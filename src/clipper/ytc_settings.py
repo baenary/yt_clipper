@@ -22,7 +22,7 @@ from clipper.ytc_logger import logger, printToLogFile
 from clipper.ytdl import ytdl_bin_get_subs, ytdl_bin_get_video_info
 
 
-def loadSettings(settings: Settings) -> None:
+def loadSettingsFromMarkersJson(settings: Settings) -> None:
     markers_json_path = Path(settings["json"])
     with Path.open(markers_json_path, encoding="utf-8-sig") as file:
         markersJson = file.read()
