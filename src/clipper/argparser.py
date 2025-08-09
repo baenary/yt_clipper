@@ -29,15 +29,6 @@ def getArgParser() -> argparse.ArgumentParser:
         default=False,
         help="Print version information for yt_clipper and its dependencies.",
     )
-    logging_options = parser.add_argument_group("Logging Options")
-    other_options = parser.add_argument_group("Other Options")
-    input_options = parser.add_argument_group("Input Options")
-    ytdl_options = parser.add_argument_group("yt-dlp Options")
-
-    output_options = parser.add_argument_group("Output Options")
-    afilter_options = parser.add_argument_group("Audio Filter Options")
-    vfilter_options = parser.add_argument_group("Video Filter Options")
-
     parser.add_argument(
         "--markers-json",
         "-j",
@@ -64,83 +55,64 @@ def getArgParser() -> argparse.ArgumentParser:
             ],
         ),
     )
-    logging_options.add_argument(
-        "--log-level",
-        dest="logLevel",
-        type=int,
-        default=15,  # VERBOSE
+
+    logging_options = parser.add_argument_group("Logging Options")
+    add_logging_options(logging_options)
+
+    other_options = parser.add_argument_group("Other Options")
+    add_other_options(other_options)
+
+    input_options = parser.add_argument_group("Input Options")
+    add_input_options(input_options)
+
+    output_options = parser.add_argument_group("Output Options")
+    add_output_options(output_options)
+
+    afilter_options = parser.add_argument_group("Audio Filter Options")
+    add_afilter_options(afilter_options)
+
+    vfilter_options = parser.add_argument_group("Video Filter Options")
+    add_vfilter_options(vfilter_options)
+
+    ytdl_options = parser.add_argument_group("yt-dlp Options")
+    add_ytdl_options(ytdl_options)
+
+    return parser
+
+
+def add_afilter_options(afilter_options: argparse._ArgumentGroup) -> None:
+    afilter_options.add_argument(
+        "--extra-audio-filters",
+        "-eaf",
+        dest="extraAudioFilters",
+        default="",
+        help="Specify any extra audio filters to be passed to ffmpeg.",
+    )
+    afilter_options.add_argument(
+        "--audio-delay",
+        "-ad",
+        type=float,
+        dest="audioDelay",
+        default=0,
         help=" ".join(
             [
-                "Change the log level of yt-clipper. Should be between 0 and 56.",
-                "All logs above the chosen level will be shown and the rest will be hidden.",
-                """Log Level Reference:
-                  CRITICAL = 50;
-                  FATAL = CRITICAL;
-                  ERROR = 40;
-                  REPORT = 34;
-                  HEADER = 33;
-                  NOTICE = 32;
-                  WARNING = 30;
-                  WARN = WARNING;
-                  IMPORTANT = 29;
-                  INFO = 20;
-                  VERBOSE = 15;
-                  DEBUG = 10;
-                  NOTSET = 0;
-                """,
+                "Add a fixed delay to the start and end time of the audio of each marker pair.",
+                "This can be used to correct audio desync present in the source video.",
+                "Note that the audio delay is applied on top of the overall delay from `--delay`/`-d`.",
             ],
         ),
     )
-    logging_options.add_argument(
-        "--no-rich-logs",
-        dest="noRichLogs",
-        action="store_true",
-        default=False,
-        help=" ".join(
-            [
-                "Disable rich colored logging introduced in v5.26 (3 column layout with syntactical highlighting)."
-                "Use simpler colored logging instead.",
-            ],
-        ),
+    afilter_options.add_argument(
+        "--audio-fade",
+        "-af",
+        type=float,
+        dest="audioFade",
+        default=0,
+        help=("Fade the audio in at start and out at end by the specified duration in seconds."),
     )
 
-    input_options.add_argument(
-        "--input-video",
-        "-i",
-        dest="inputVideo",
-        default="",
-        help="Input video path.",
-    )
-    input_options.add_argument(
-        "--download-video",
-        "-dv",
-        action="store_true",
-        dest="downloadVideo",
-        help="Download video from the internet and use as input video for processing marker data.",
-    )
-    parser.add_argument(
-        "--marker-pairs-merge-list",
-        "-mpml",
-        dest="markerPairsMergeList",
-        default="",
-        help=" ".join(
-            [
-                "Specify which marker pairs if any you would like to merge/concatenate.",
-                "Each merge is a comma separated list of marker pair numbers or ranges",
-                'For example "1-3,5,9" will merge marker pairs "1,2,3,5,9").',
-                'Separate multiple merges with semicolons (eg "1-3,5,9;6-2,8" creates 2 merged clips).',
-                "Merge requires successful generation of each required marker pair.",
-                "Merge does not require reencoding and simply orders each clip into one container.",
-            ],
-        ),
-    )
-    output_options.add_argument(
-        "--fast-trim",
-        "-ft",
-        action="store_true",
-        dest="fastTrim",
-        help="Enable fast trim mode. Generates output clips very quickly by skipping re-encoding. The output will use the same video and audio codec as the input. Will output video clips with imprecise time trim and will disable most features including crop and speed.",
-    )
+
+def add_vfilter_options(vfilter_options: argparse._ArgumentGroup) -> None:
     vfilter_options.add_argument(
         "--overlay",
         "-ov",
@@ -177,63 +149,6 @@ def getArgParser() -> argparse.ArgumentParser:
         default=1,
         help="Multiply all y crop dimensions by an integer.",
     )
-    input_options.add_argument(
-        "--only",
-        default="",
-        help=" ".join(
-            [
-                "Specify which marker pairs to process by providing a comma separated",
-                'list of marker pair numbers or ranges (e.g., "1-3,5,9" = "1,2,3,5,9").',
-                "The --except flag takes precedence and will skip pairs specified with --only.",
-            ],
-        ),
-    )
-    input_options.add_argument(
-        "--except",
-        default="",
-        help=" ".join(
-            [
-                "Specify which marker pairs to skip by providing a comma separated",
-                'list of marker pair numbers or ranges (e.g., "1-3,5,9" = "1,2,3,5,9").',
-                "The --except flag takes precedence and will skip pairs specified with --only.",
-            ],
-        ),
-    )
-    input_options.add_argument(
-        "--format",
-        "-f",
-        default="(bestvideo+(bestaudio[acodec=opus]/bestaudio))/best",
-        help="Specify format string passed to yt-dlp.",
-    )
-
-    input_options.add_argument(
-        "--format-sort",
-        "-S",
-        dest="formatSort",
-        nargs="+",
-        default=[
-            "hasvid,ie_pref,lang,quality,res,fps,br,size,hdr:1,vcodec:vp9.2,vcodec:vp9,asr,proto,ext,hasaud,source,id",
-        ],
-        help=" ".join(
-            [
-                "Specify the sorting used to determine the best audio and video formats to download for generating clips."
-                "The sorting is specified as a comma-separated list of sort fields that describe audio/video formats."
-                "The list of sort fields is passed to yt_dlp.",
-                "See the documentation of yt-dlp for the details on available sort fields.",
-                "The default sort used by yt-dlp is similar to the yt-dlp default",
-                "except higher filesize and bitrate are preferred over a codec hierarchy.",
-                "This default sort is closer to the behavior of youtube_dl but not the same.",
-            ],
-        ),
-    )
-
-    output_options.add_argument(
-        "--audio",
-        "-a",
-        action="store_true",
-        help="Enable audio in output webms.",
-    )
-
     vfilter_options.add_argument(
         "--extra-video-filters",
         "-evf",
@@ -241,13 +156,7 @@ def getArgParser() -> argparse.ArgumentParser:
         default="",
         help="Specify any extra video filters to be passed to ffmpeg.",
     )
-    afilter_options.add_argument(
-        "--extra-audio-filters",
-        "-eaf",
-        dest="extraAudioFilters",
-        default="",
-        help="Specify any extra audio filters to be passed to ffmpeg.",
-    )
+
     vfilter_options.add_argument(
         "--minterp-mode",
         "-mm",
@@ -328,20 +237,7 @@ def getArgParser() -> argparse.ArgumentParser:
             ],
         ),
     )
-    afilter_options.add_argument(
-        "--audio-delay",
-        "-ad",
-        type=float,
-        dest="audioDelay",
-        default=0,
-        help=" ".join(
-            [
-                "Add a fixed delay to the start and end time of the audio of each marker pair.",
-                "This can be used to correct audio desync present in the source video.",
-                "Note that the audio delay is applied on top of the overall delay from `--delay`/`-d`.",
-            ],
-        ),
-    )
+
     vfilter_options.add_argument(
         "--gamma",
         "-ga",
@@ -497,13 +393,109 @@ def getArgParser() -> argparse.ArgumentParser:
             ],
         ),
     )
-    afilter_options.add_argument(
-        "--audio-fade",
-        "-af",
-        type=float,
-        dest="audioFade",
-        default=0,
-        help=("Fade the audio in at start and out at end by the specified duration in seconds."),
+
+
+def add_ytdl_options(ytdl_options: argparse._ArgumentGroup) -> None:
+    ytdl_options.add_argument(
+        "--ytdl-username",
+        "-yu",
+        dest="username",
+        default="",
+        help="Username passed to youtube-dl for authentication.",
+    )
+    ytdl_options.add_argument(
+        "--ytdl-password",
+        "-yp",
+        dest="password",
+        default="",
+        help="Password passed to youtube-dl for authentication.",
+    )
+
+    ytdl_options.add_argument(
+        "--cookiefile",
+        "-cf",
+        dest="cookiefile",
+        default="",
+        metavar="FILE",
+        help="Specify the path to a Netscape formatted cookies file to be used by yt-dlp. Use this option when sign "
+        "in is required by the video platform. On how to obtain the cookies file, "
+        "see https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp",
+    )
+
+    ytdl_options.add_argument(
+        "--ytdl-location",
+        dest="ytdlLocation",
+        default="",
+        help="Specify a location for yt-dlp on your system."
+        "If a relative or absolute path is given, the yt-dlp installed at that location is used."
+        "Otherwise the system PATH will be searched.",
+    )
+
+    ytdl_options.add_argument(
+        "--no-ytdl-auto-update",
+        dest="ytdlAutoUpdate",
+        action="store_false",
+        default=True,
+        help="Disable automatic yt-dlp updates when running a frozen release of yt_clipper.",
+    )
+
+
+def add_other_options(other_options: argparse._ArgumentGroup) -> None:
+    other_options.add_argument(
+        "--notify-on-completion",
+        "-noc",
+        dest="notifyOnCompletion",
+        action="store_true",
+        help="Display a system notification when yt_clipper completes the current run.",
+    )
+    other_options.add_argument(
+        "--preview",
+        "-p",
+        action="store_true",
+        help=" ".join(
+            [
+                "Enable preview mode. Skips generating clips and instead prompts for marker pairs to preview.",
+            ],
+        ),
+    )
+
+
+def add_output_options(output_options: argparse._ArgumentGroup) -> None:
+    output_options.add_argument(
+        "--overwrite",
+        "-ow",
+        dest="overwrite",
+        action="store_true",
+        help="Regenerate and overwrite existing clips.",
+    )
+    output_options.add_argument(
+        "--audio",
+        "-a",
+        action="store_true",
+        help="Enable audio in output webms.",
+    )
+    output_options.add_argument(
+        "--marker-pairs-merge-list",
+        "-mpml",
+        dest="markerPairsMergeList",
+        default="",
+        help=" ".join(
+            [
+                "Specify which marker pairs if any you would like to merge/concatenate.",
+                "Each merge is a comma separated list of marker pair numbers or ranges",
+                'For example "1-3,5,9" will merge marker pairs "1,2,3,5,9").',
+                'Separate multiple merges with semicolons (eg "1-3,5,9;6-2,8" creates 2 merged clips).',
+                "Merge requires successful generation of each required marker pair.",
+                "Merge does not require reencoding and simply orders each clip into one container.",
+            ],
+        ),
+    )
+    output_options.add_argument(
+        "--fast-trim",
+        "-ft",
+        action="store_true",
+        dest="fastTrim",
+        help="Enable fast trim mode. Generates output clips very quickly by skipping re-encoding. The output will use the same video and audio codec as the input. Will output video clips with imprecise time trim and will disable most features including crop and speed.",
     )
     output_options.add_argument(
         "--encode-speed",
@@ -627,23 +619,6 @@ def getArgParser() -> argparse.ArgumentParser:
             ],
         ),
     )
-    other_options.add_argument(
-        "--preview",
-        "-p",
-        action="store_true",
-        help=" ".join(
-            [
-                "Enable preview mode. Skips generating clips and instead prompts for marker pairs to preview.",
-            ],
-        ),
-    )
-    input_options.add_argument(
-        "--no-auto-find-input-video",
-        "-nafiv",
-        dest="noAutoFindInputVideo",
-        action="store_true",
-        help="Disable automatic detection and usage of input video when not in preview mode.",
-    )
 
     output_options.add_argument(
         "--remove-metadata",
@@ -691,21 +666,78 @@ def getArgParser() -> argparse.ArgumentParser:
             ],
         ),
     )
-    other_options.add_argument(
-        "--notify-on-completion",
-        "-noc",
-        dest="notifyOnCompletion",
-        action="store_true",
-        help="Display a system notification when yt_clipper completes the current run.",
-    )
-    output_options.add_argument(
-        "--overwrite",
-        "-ow",
-        dest="overwrite",
-        action="store_true",
-        help="Regenerate and overwrite existing clips.",
-    )
 
+
+def add_input_options(input_options: argparse._ArgumentGroup) -> None:
+    input_options.add_argument(
+        "--input-video",
+        "-i",
+        dest="inputVideo",
+        default="",
+        help="Input video path.",
+    )
+    input_options.add_argument(
+        "--download-video",
+        "-dv",
+        action="store_true",
+        dest="downloadVideo",
+        help="Download video from the internet and use as input video for processing marker data.",
+    )
+    input_options.add_argument(
+        "--only",
+        default="",
+        help=" ".join(
+            [
+                "Specify which marker pairs to process by providing a comma separated",
+                'list of marker pair numbers or ranges (e.g., "1-3,5,9" = "1,2,3,5,9").',
+                "The --except flag takes precedence and will skip pairs specified with --only.",
+            ],
+        ),
+    )
+    input_options.add_argument(
+        "--except",
+        default="",
+        help=" ".join(
+            [
+                "Specify which marker pairs to skip by providing a comma separated",
+                'list of marker pair numbers or ranges (e.g., "1-3,5,9" = "1,2,3,5,9").',
+                "The --except flag takes precedence and will skip pairs specified with --only.",
+            ],
+        ),
+    )
+    input_options.add_argument(
+        "--format",
+        "-f",
+        default="(bestvideo+(bestaudio[acodec=opus]/bestaudio))/best",
+        help="Specify format string passed to yt-dlp.",
+    )
+    input_options.add_argument(
+        "--format-sort",
+        "-S",
+        dest="formatSort",
+        nargs="+",
+        default=[
+            "hasvid,ie_pref,lang,quality,res,fps,br,size,hdr:1,vcodec:vp9.2,vcodec:vp9,asr,proto,ext,hasaud,source,id",
+        ],
+        help=" ".join(
+            [
+                "Specify the sorting used to determine the best audio and video formats to download for generating clips."
+                "The sorting is specified as a comma-separated list of sort fields that describe audio/video formats."
+                "The list of sort fields is passed to yt_dlp.",
+                "See the documentation of yt-dlp for the details on available sort fields.",
+                "The default sort used by yt-dlp is similar to the yt-dlp default",
+                "except higher filesize and bitrate are preferred over a codec hierarchy.",
+                "This default sort is closer to the behavior of youtube_dl but not the same.",
+            ],
+        ),
+    )
+    input_options.add_argument(
+        "--no-auto-find-input-video",
+        "-nafiv",
+        dest="noAutoFindInputVideo",
+        action="store_true",
+        help="Disable automatic detection and usage of input video when not in preview mode.",
+    )
     input_options.add_argument(
         "--enable-video-streaming-protocol-hls",
         "-evsp-hls",
@@ -714,50 +746,47 @@ def getArgParser() -> argparse.ArgumentParser:
         help="Enable use of the HLS (HTTP live streaming) video streaming protocol. Typically this involves the use of a m3u8 manifest file with a list of video segments. HLS is a relatively unreliable protocol and support for it in ffmpeg is not robust, often leading to errors during clip generation. Thus, HLS is disabled by default. However, some platforms only offer HLS (e.g. AfreecaTV for which HLS is allowed by default) and in other cases HLS may be the highest quality video stream. If HLS is required, consider downloading the video first either automatically with --download-video or the yt_clipper_auto_download helper script or manually and then specifying the video with --input-video or the yt_clipper_auto_input_video helper script.",
     )
 
-    ytdl_options.add_argument(
-        "--ytdl-username",
-        "-yu",
-        dest="username",
-        default="",
-        help="Username passed to youtube-dl for authentication.",
-    )
-    ytdl_options.add_argument(
-        "--ytdl-password",
-        "-yp",
-        dest="password",
-        default="",
-        help="Password passed to youtube-dl for authentication.",
-    )
 
-    ytdl_options.add_argument(
-        "--cookiefile",
-        "-cf",
-        dest="cookiefile",
-        default="",
-        metavar="FILE",
-        help="Specify the path to a Netscape formatted cookies file to be used by yt-dlp. Use this option when sign "
-        "in is required by the video platform. On how to obtain the cookies file, "
-        "see https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp",
+def add_logging_options(logging_options: argparse._ArgumentGroup) -> None:
+    logging_options.add_argument(
+        "--log-level",
+        dest="logLevel",
+        type=int,
+        default=15,  # VERBOSE
+        help=" ".join(
+            [
+                "Change the log level of yt-clipper. Should be between 0 and 56.",
+                "All logs above the chosen level will be shown and the rest will be hidden.",
+                """Log Level Reference:
+                  CRITICAL = 50;
+                  FATAL = CRITICAL;
+                  ERROR = 40;
+                  REPORT = 34;
+                  HEADER = 33;
+                  NOTICE = 32;
+                  WARNING = 30;
+                  WARN = WARNING;
+                  IMPORTANT = 29;
+                  INFO = 20;
+                  VERBOSE = 15;
+                  DEBUG = 10;
+                  NOTSET = 0;
+                """,
+            ],
+        ),
     )
-
-    ytdl_options.add_argument(
-        "--ytdl-location",
-        dest="ytdlLocation",
-        default="",
-        help="Specify a location for yt-dlp on your system."
-        "If a relative or absolute path is given, the yt-dlp installed at that location is used."
-        "Otherwise the system PATH will be searched.",
+    logging_options.add_argument(
+        "--no-rich-logs",
+        dest="noRichLogs",
+        action="store_true",
+        default=False,
+        help=" ".join(
+            [
+                "Disable rich colored logging introduced in v5.26 (3 column layout with syntactical highlighting)."
+                "Use simpler colored logging instead.",
+            ],
+        ),
     )
-
-    ytdl_options.add_argument(
-        "--no-ytdl-auto-update",
-        dest="ytdlAutoUpdate",
-        action="store_false",
-        default=True,
-        help="Disable automatic yt-dlp updates when running a frozen release of yt_clipper.",
-    )
-
-    return parser
 
 
 def getArgs() -> Tuple[Dict[str, Any], List[str], List[str], List[str], Dict[str, List[str]]]:
