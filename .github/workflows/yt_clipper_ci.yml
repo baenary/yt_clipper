@@ -28,15 +28,15 @@ jobs:
         include:
           - os: windows-latest
             shortos: win
-            ffmpeg_dl_name: ffmpeg-7.1-full_build-shared
-            ffmpeg_dl_prefix: 'https://github.com/GyanD/codexffmpeg/releases/download/7.1'
+            ffmpeg_dl_name: ffmpeg-8.0.1-full_build-shared
+            ffmpeg_dl_prefix: 'https://github.com/GyanD/codexffmpeg/releases/download/8.0.1'
             yt-dlp_download_url: 'https://github.com/yt-dlp/yt-dlp/releases/download/2024.10.07/yt-dlp.exe'
           - os: macos-latest
             shortos: macos
-            ffmpeg_dl_url: 'https://evermeet.cx/ffmpeg/ffmpeg-7.1.7z'
-            ffprobe_dl_url: 'https://evermeet.cx/ffmpeg/ffprobe-7.1.7z'
-            ffplay_dl_url: 'https://evermeet.cx/ffmpeg/ffplay-7.1.7z'
-            ffmpeg_info_url: 'https://evermeet.cx/ffmpeg/info/7.1'
+            ffmpeg_dl_url: 'https://evermeet.cx/ffmpeg/ffmpeg-8.0.1.7z'
+            ffprobe_dl_url: 'https://evermeet.cx/ffmpeg/ffprobe-8.0.1.7z'
+            ffplay_dl_url: 'https://evermeet.cx/ffmpeg/ffplay-8.0.1.7z'
+            ffmpeg_info_url: 'https://evermeet.cx/ffmpeg/info/8.0.1'
             yt-dlp_download_url: 'https://github.com/yt-dlp/yt-dlp/releases/download/2024.10.07/yt-dlp_macos'
 
     steps:
