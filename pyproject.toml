@@ -3,7 +3,7 @@ name = "clipper"
 version = "5.34.0"
 description = "Quickly generate clipped webms."
 authors = [{ name = "exwm", email = "rjvgb@protonmail.com" }]
-requires-python = ">=3.9,<3.13"
+requires-python = ">=3.12,<3.13"
 readme = "readme.md"
 license = "MIT"
 dependencies = [
