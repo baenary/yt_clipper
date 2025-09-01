@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [5.35.0](https://github.com/exwm/yt_clipper/compare/v5.34.0...v5.35.0) (2025-09-01)
+
+
+### Features
+
+* **clipper:** add --ffmpeg-tools-dir option for changing where ffmpeg tools are found ([279c0fd](https://github.com/exwm/yt_clipper/commit/279c0fd5aa62cb137802249a9963fb8e84d81372))
+
+
+### Bug Fixes
+
+* **clipper:** security issues with options that change tool ytdl-location ([9c036aa](https://github.com/exwm/yt_clipper/commit/9c036aa46a43f5730f265672e9177c82d072c5c3))
+
+
+### Major Dependency Upgrades
+
+* **clipper:** update to ffmpeg 8.0 ([779a1ec](https://github.com/exwm/yt_clipper/commit/779a1ece06a7c3c881c453fbb00445826d7c9b8d))
+
 ## [5.34.0](https://github.com/exwm/yt_clipper/compare/v5.33.0...v5.34.0) (2025-08-03)
 
 
