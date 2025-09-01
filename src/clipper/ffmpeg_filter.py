@@ -570,16 +570,3 @@ def videoStabilizationGammaFixFilter(filter_to_wrap: str) -> str:
     )
 
     return wrapped_filter
-
-
-def wrapVideoFilterForHardwareAcceleration(videoCodec: str, video_filter: str) -> str:
-    if "nvenc" in videoCodec:
-        # Frame data is in VRAM assuming cuda is used for decoding
-        # We convert it to yuv444 pixel format in VRAM, download to system mem, and ensure we remain in yuv444p to avoid chroma subsampling artifacts
-        return f"scale_cuda=format=yuv444p,hwdownload,format=yuv444p,{video_filter},hwupload_cuda"
-
-    return f"format=yuv444p,{video_filter},format=nv12,hwupload"
-
-
-def isHardwareAcceleratedVideoCodec(codec: str) -> bool:
-    return codec in {"h264_nvenc", "h264_vulkan"}

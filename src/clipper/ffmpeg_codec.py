@@ -277,3 +277,16 @@ def getFfmpegVideoCodecH264Nvenc(
     video_codec_input_args = "-hwaccel cuda -hwaccel_output_format cuda"
     video_codec_output_args = " ".join(("-f mp4", fps_arg))
     return video_codec_args, video_codec_input_args, video_codec_output_args
+
+
+def isHardwareAcceleratedVideoCodec(codec: str) -> bool:
+    return any(codec.endswith(codec_ext) for codec_ext in ["nvenc", "vulkan"])
+
+
+def wrapVideoFilterForHardwareAcceleration(videoCodec: str, video_filter: str) -> str:
+    if "nvenc" in videoCodec:
+        # Frame data is in VRAM assuming cuda is used for decoding
+        # We convert it to yuv444 pixel format in VRAM, download to system mem, and ensure we remain in yuv444p to avoid chroma subsampling artifacts
+        return f"scale_cuda=format=yuv444p,hwdownload,format=yuv444p,{video_filter},hwupload_cuda"
+
+    return f"format=yuv444p,{video_filter},format=nv12,hwupload"

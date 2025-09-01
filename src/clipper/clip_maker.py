@@ -21,7 +21,11 @@ from clipper.clipper_types import (
     MissingMergeInput,
     Settings,
 )
-from clipper.ffmpeg_codec import getFfmpegVideoCodecArgs
+from clipper.ffmpeg_codec import (
+    getFfmpegVideoCodecArgs,
+    isHardwareAcceleratedVideoCodec,
+    wrapVideoFilterForHardwareAcceleration,
+)
 from clipper.ffmpeg_filter import (
     autoScaleCropMap,
     getAutoScaledCropComponents,
@@ -33,9 +37,7 @@ from clipper.ffmpeg_filter import (
     getSpeedFilterAndDuration,
     getSubsFilter,
     getZoomPanFilter,
-    isHardwareAcceleratedVideoCodec,
     videoStabilizationGammaFixFilter,
-    wrapVideoFilterForHardwareAcceleration,
 )
 from clipper.platforms import getFfmpegHeaders
 from clipper.util import escapeSingleQuotesFFmpeg, getTrimmedBase64Hash
@@ -956,7 +958,7 @@ def mergeClips(cs: ClipperState) -> None:  # noqa: PLR0912
         )
         overwriteArg = "-y" if settings["overwrite"] else "-n"
         ffmpegConcatFlags = f"{overwriteArg} -hide_banner -f concat -safe 0"
-        ffmpegConcatCmd = f' "{cp.ffmpegPath}" {ffmpegConcatFlags}  -i "{inputsTxtPath}" -c copy "{mergedFilePath}"'
+        ffmpegConcatCmd = f' {cp.ffmpegPath} {ffmpegConcatFlags}  -i "{inputsTxtPath}" -c copy "{mergedFilePath}"'
 
         if not mergeFileExists or settings["overwrite"]:
             logger.info(f"Using ffmpeg command: {ffmpegConcatCmd}")

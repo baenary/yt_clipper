@@ -426,12 +426,12 @@ def add_ytdl_options(ytdl_options: argparse._ArgumentGroup) -> None:
     )
 
     ytdl_options.add_argument(
-        "--ytdl-location",
-        dest="ytdlLocation",
+        "--ytdl-dir",
+        dest="ytdlDir",
         default="",
-        help="Specify a location for yt-dlp on your system."
-        "If a relative or absolute path is given, the yt-dlp installed at that location is used."
-        "Otherwise the system PATH will be searched.",
+        help="Specify a directory to search for the yt-dlp tool on your system."
+        "If a relative or absolute path is given, the expected tool name for the platform will be searched for in the direcotry."
+        "If unspecified, the system PATH will be searched.",
     )
 
     ytdl_options.add_argument(

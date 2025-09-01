@@ -24,7 +24,7 @@ def ffprobeVideoProperties(cs: ClipperState, videoURL: str) -> Optional[DictStrA
                     getFfmpegHeaders(settings["platform"]),
                 ),
             )
-            ffprobeCommand = f'"{cp.ffprobePath}" "{videoURL}" {ffprobeFlags} '
+            ffprobeCommand = f'{cp.ffprobePath} "{videoURL}" {ffprobeFlags} '
             logger.debug(ffprobeCommand)
             ffprobeOutput = subprocess.check_output(shlex.split(ffprobeCommand))
             logger.success(f"Successfully fetched video properties with ffprobe")
@@ -39,7 +39,8 @@ def ffprobeVideoProperties(cs: ClipperState, videoURL: str) -> Optional[DictStrA
                 continue
             return None
 
-        ffprobeOutput = ffprobeOutput.decode("utf-8")
+
+        ffprobeOutput: str = ffprobeOutput.decode("utf-8") # type: ignore [assignment]
         logger.info("-" * 80)
         logger.info("Detecting video properties with ffprobe")
         logger.debug(f"ffprobeOutput={ffprobeOutput}")

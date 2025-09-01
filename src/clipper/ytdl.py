@@ -37,7 +37,7 @@ def ytdl_bin_get_args_base(cs: ClipperState) -> List[str]:
     # fmt: on
 
     if getattr(sys, "frozen", False):
-        ytdl_args.extend(["--ffmpeg-location", shlex.quote(cp.ffmpegPath)])
+        ytdl_args.extend(["--ffmpeg-location", cp.ffmpegPath])
 
     cookies = settings["cookiefile"]
 
@@ -97,9 +97,9 @@ def ytdl_bin_update(cs: ClipperState) -> None:
     if not getattr(sys, "frozen", False):
         return
 
-    if settings["ytdlLocation"]:
+    if settings["ytdlDir"]:
         logger.report(
-            "Skipping check for yt-dlp updates as user specified their own version of yt-dlp.",
+            "Skipping check for yt-dlp updates as user specified their own location for yt-dlp.",
         )
         return
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import shlex
 import sys
 from pathlib import Path
 
@@ -28,10 +29,10 @@ def main() -> None:
 
     args, unknown, argsFromArgFiles, argFiles, argsFromArgFilesMap = argparser.getArgs()
 
+    setupClipperPaths(cs)
+
     cs.settings.update({"color_space": None, **args})
     ytc_settings.loadSettingsFromMarkersJson(cs.settings)
-
-    setupClipperPaths(cs)
 
     if cs.settings["printVersions"]:
         print(argparser.getDepVersionsString(cs.clipper_paths))
@@ -92,6 +93,7 @@ def setupClipperPaths(cs: ClipperState) -> None:
     ffmpeg_tools_dir = settings.get("ffmpegToolsDir")
 
     if getattr(sys, "frozen", False) or ffmpeg_tools_dir:
+        ffmpeg_tools_dir = ffmpeg_tools_dir if ffmpeg_tools_dir else "./bin"
         cp.ffmpegPath = f"{ffmpeg_tools_dir}/ffmpeg"
         cp.ffprobePath = f"{ffmpeg_tools_dir}/ffprobe"
         cp.ffplayPath = f"{ffmpeg_tools_dir}/ffplay"
@@ -101,8 +103,12 @@ def setupClipperPaths(cs: ClipperState) -> None:
             cp.ffprobePath += ".exe"
             cp.ffplayPath += ".exe"
 
-    if getattr(sys, "frozen", False):
-        cp.ytdlPath = "./bin/yt-dlp"
+    ytdl_dir = settings.get("ytdlDir")
+
+    if getattr(sys, "frozen", False) or ytdl_dir:
+        ytdl_dir = ytdl_dir if ytdl_dir else "./bin"
+
+        cp.ytdlPath = f"{ytdl_dir}/yt-dlp"
 
         if sys.platform == "darwin":
             cp.ytdlPath += "_macos"
@@ -110,15 +116,15 @@ def setupClipperPaths(cs: ClipperState) -> None:
         if sys.platform == "win32":
             cp.ytdlPath += ".exe"
 
-    if settings["ytdlLocation"]:
-        cp.ytdlPath = settings["ytdlLocation"]
-
     if sys.platform == "darwin":
         certifi_cacert_path = certifi.where()
         os.environ["SSL_CERT_FILE"] = certifi_cacert_path
         os.environ["REQUESTS_CA_BUNDLE"] = certifi_cacert_path
 
-
+    cp.ffmpegPath = shlex.quote(cp.ffmpegPath)
+    cp.ffprobePath = shlex.quote(cp.ffprobePath)
+    cp.ffplayPath = shlex.quote(cp.ffplayPath)
+    cp.ytdlPath = shlex.quote(cp.ytdlPath)
 
 
 def setupOutputPaths(cs: ClipperState) -> None:
