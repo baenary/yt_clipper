@@ -12,7 +12,7 @@ on:
 # Can work around to some degree using set-env
 env:
   NAME: yt_clipper
-  VERSION: '5.35.0'
+  VERSION: "5.35.0"
 
 jobs:
   build:
@@ -23,7 +23,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        node-version: ['22.18.x']
+        node-version: ["22.18.x"]
         os: [windows-latest, macos-latest]
         include:
           - os: windows-latest
@@ -31,13 +31,15 @@ jobs:
             ffmpeg_dl_name: ffmpeg-8.0.1-full_build-shared
             ffmpeg_dl_prefix: 'https://github.com/GyanD/codexffmpeg/releases/download/8.0.1'
             yt-dlp_download_url: 'https://github.com/yt-dlp/yt-dlp/releases/download/2025.08.27/yt-dlp.exe'
+            deno_download_url: "https://github.com/denoland/deno/releases/download/v2.5.6/deno-x86_64-pc-windows-msvc.zip"
           - os: macos-latest
             shortos: macos
             ffmpeg_dl_url: 'https://evermeet.cx/ffmpeg/ffmpeg-8.0.1.7z'
             ffprobe_dl_url: 'https://evermeet.cx/ffmpeg/ffprobe-8.0.1.7z'
             ffplay_dl_url: 'https://evermeet.cx/ffmpeg/ffplay-8.0.1.7z'
             ffmpeg_info_url: 'https://evermeet.cx/ffmpeg/info/8.0.1'
-            yt-dlp_download_url: 'https://github.com/yt-dlp/yt-dlp/releases/download/2025.08.27/yt-dlp_macos'
+            yt-dlp_download_url: "https://github.com/yt-dlp/yt-dlp/releases/download/2025.08.27/yt-dlp_macos"
+            deno_download_url: "https://github.com/denoland/deno/releases/download/v2.5.6/deno-aarch64-apple-darwin.zip"
 
     steps:
       - name: Set env
@@ -109,6 +111,21 @@ jobs:
 
           ls -laR
 
+      - name: Download deno dependency
+        shell: bash
+        run: |
+          cd ./bindeps
+          mkdir -p deno/bin
+          cd deno/bin
+
+          curl -o ./deno.zip -L ${{ matrix.deno_download_url }}
+          7z x ./deno.zip
+          rm -f ./deno.zip
+
+          chmod -v +x *
+
+          ls -laR
+
       - name: Setup just
         uses: extractions/setup-just@v2
 
@@ -116,8 +133,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
-          architecture: 'x64'
+          cache: "yarn"
+          architecture: "x64"
 
       - name: Load cached node_modules
         id: cached-node_modules
@@ -132,9 +149,9 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
-          version: '0.8.0'
+          version: "0.8.0"
           enable-cache: true
-          cache-dependency-glob: 'uv.lock'
+          cache-dependency-glob: "uv.lock"
 
       - name: Set up Python
         run: uv python install
@@ -161,6 +178,7 @@ jobs:
           mv ./bindeps/ffmpeg/bin/* ./artifact/py/${{env.FULL_NAME}}/bin/
           mv ./bindeps/ffmpeg/*.txt ./artifact/py/${{env.FULL_NAME}}/bin/
           mv ./bindeps/yt-dlp/bin/* ./artifact/py/${{env.FULL_NAME}}/bin/
+          mv ./bindeps/deno/bin/* ./artifact/py/${{env.FULL_NAME}}/bin/
 
           cp ./src/clipper/include/* ./artifact/py/${{env.FULL_NAME}}/
           cp ./src/clipper/${{matrix.shortos}}_helpers/* ./artifact/py/${{env.FULL_NAME}}/
