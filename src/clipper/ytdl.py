@@ -28,7 +28,6 @@ def ytdl_bin_get_args_base(cs: ClipperState) -> List[str]:
       cp.ytdlPath,
       "--no-cache-dir",
       "--verbose",
-      "--no-youtube-include-dash-manifest",
       "--merge-output-format", "mkv",
       "--format", settings["format"],
       "--format-sort", shlex.quote(",".join(settings["formatSort"])),
