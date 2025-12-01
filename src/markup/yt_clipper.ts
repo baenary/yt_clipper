@@ -518,6 +518,8 @@ async function loadytClipper() {
     document.addEventListener('keydown', addCropHoverListener, true);
     document.addEventListener('keyup', removeCropHoverListener, true);
     document.body.addEventListener('wheel', mouseWheelFrameSkipHandler);
+    document.body.addEventListener('mousedown', changeMouseWheelFrameSkipRateHandler);
+
     document.body.addEventListener('wheel', moveMarkerByFrameHandler);
     document.body.addEventListener('wheel', selectCropPoint, { passive: false });
     document.body.addEventListener('wheel', inheritCropPointCrop, { passive: false });
@@ -704,6 +706,7 @@ async function loadytClipper() {
     }
   }
 
+  let mouseWheelFrameSkipRate = 1;
   function mouseWheelFrameSkipHandler(event: WheelEvent) {
     if (
       isHotkeysEnabled &&
@@ -714,10 +717,25 @@ async function loadytClipper() {
     ) {
       let fps = getFPS();
       if (event.deltaY < 0) {
-        seekBySafe(video, 1 / fps);
+        seekBySafe(video, mouseWheelFrameSkipRate / fps);
       } else if (event.deltaY > 0) {
-        seekBySafe(video, -1 / fps);
+        seekBySafe(video, -mouseWheelFrameSkipRate / fps);
       }
+    }
+  }
+
+  function changeMouseWheelFrameSkipRateHandler(event: MouseEvent) {
+    if (
+      isHotkeysEnabled &&
+      !event.ctrlKey &&
+      !event.altKey &&
+      event.shiftKey &&
+      event.button == 1
+    ) {
+      event.preventDefault();
+      mouseWheelFrameSkipRate += 1;
+      if (mouseWheelFrameSkipRate > 4) mouseWheelFrameSkipRate = 1;
+      flashMessage(`Mouse wheel frame skip rate set to ${mouseWheelFrameSkipRate}`, 'green');
     }
   }
 

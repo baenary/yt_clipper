@@ -259,7 +259,9 @@ A shortcuts reference can be toggled by clicking the scissor icon in the video c
 
 ## Video Playback and Preview Shortcuts
 
-**Shift+Mouse-Wheel:** Scroll the mouse wheel up/down over the video to skip forward/backward one frame per tick.
+**Shift+Mousewheel:** Scroll the mouse wheel up/down over the video to skip/seek forward/backward 1 (default) frames per tick.
+
+**Shift+Mousewheel-Click:** Click the mouse wheel (or middle mouse button) to cycle the frame skip/seek rate between 1 and 3 frames.
 
 **Alt+Click+Drag:** Scrub/seek video time backward or forward by dragging left or right respectively.
 
