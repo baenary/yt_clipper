@@ -30,7 +30,7 @@ jobs:
             shortos: win
             ffmpeg_dl_name: ffmpeg-8.0.1-full_build-shared
             ffmpeg_dl_prefix: 'https://github.com/GyanD/codexffmpeg/releases/download/8.0.1'
-            yt-dlp_download_url: 'https://github.com/yt-dlp/yt-dlp/releases/download/2025.08.27/yt-dlp.exe'
+            yt-dlp_download_url: 'https://github.com/yt-dlp/yt-dlp/releases/download/2025.11.12/yt-dlp.exe'
             deno_download_url: "https://github.com/denoland/deno/releases/download/v2.5.6/deno-x86_64-pc-windows-msvc.zip"
           - os: macos-latest
             shortos: macos
@@ -38,7 +38,7 @@ jobs:
             ffprobe_dl_url: 'https://evermeet.cx/ffmpeg/ffprobe-8.0.1.7z'
             ffplay_dl_url: 'https://evermeet.cx/ffmpeg/ffplay-8.0.1.7z'
             ffmpeg_info_url: 'https://evermeet.cx/ffmpeg/info/8.0.1'
-            yt-dlp_download_url: "https://github.com/yt-dlp/yt-dlp/releases/download/2025.08.27/yt-dlp_macos"
+            yt-dlp_download_url: "https://github.com/yt-dlp/yt-dlp/releases/download/2025.11.12/yt-dlp_macos"
             deno_download_url: "https://github.com/denoland/deno/releases/download/v2.5.6/deno-aarch64-apple-darwin.zip"
 
     steps:
