@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [5.36.0](https://github.com/exwm/yt_clipper/compare/v5.34.0...v5.36.0) (2025-12-01)
+
+
+### Features
+
+* **clipper:** add --ffmpeg-tools-dir option for changing where ffmpeg tools are found ([cca924d](https://github.com/exwm/yt_clipper/commit/cca924df24b845a7daaea407c99c37bc01cf8a1f))
+* **clipper:** include deno runtime for yt-dlp youtube extraction ([7c24a62](https://github.com/exwm/yt_clipper/commit/7c24a620290ffe4e7c1b391f83c01f5ce91e4bc1))
+* **markup:** cycle frame skip/seek speed (1 to 3 frames) on shift+mousewheel-click ([6e84bdf](https://github.com/exwm/yt_clipper/commit/6e84bdfc2acaa111ca36f981ac34461dae3fe9f1))
+
+
+### Bug Fixes
+
+* **clipper:** escape merged file name when logging ([90c2f5c](https://github.com/exwm/yt_clipper/commit/90c2f5c0b010c757e3432e719aa12fe7ef691f76))
+* **clipper:** security issues with options that change tool ytdl-location ([413e768](https://github.com/exwm/yt_clipper/commit/413e768187ffad77c25edec2685c601da1e3c7b7))
+
+
+### Major Dependency Upgrades
+
+* **clipper:** update to ffmpeg 8.0.1 ([f22b578](https://github.com/exwm/yt_clipper/commit/f22b5787904f0cbf672d5cb52e6d47b44c4b0487))
+
 ## [5.35.0](https://github.com/exwm/yt_clipper/compare/v5.34.0...v5.35.0) (2025-09-01)
 
 
