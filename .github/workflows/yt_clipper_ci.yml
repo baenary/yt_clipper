@@ -142,7 +142,7 @@ jobs:
         with:
           path: node_modules
           key: yarn-${{ matrix.os }}-${{ hashFiles('**/yarn.lock') }}
-      - run: yarn install --frozen-lockfile
+      - run: yarn install --frozen-lockfile --ignore-scripts
 
       - run: just bundle-prod
 
