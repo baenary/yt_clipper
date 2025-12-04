@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [5.37.0](https://github.com/exwm/yt_clipper/compare/v5.36.0...v5.37.0) (2025-12-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* **markup+clippera:** instant ease in behaviour and ease in timing changes
+may produce slightly different videos with the same markers json
+
+### Bug Fixes
+
+* **markup+clippera:** improve dynamic crop preview accuracy, make instant crop ease in easier to use ([40341b6](https://github.com/exwm/yt_clipper/commit/40341b679b3c34e0a317c6836bf6074d05b77f36))
+
 ## [5.36.0](https://github.com/exwm/yt_clipper/compare/v5.34.0...v5.36.0) (2025-12-01)
 
 
